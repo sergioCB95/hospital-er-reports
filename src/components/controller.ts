@@ -17,6 +17,7 @@ const controller = (): Module<any> => {
       })),
     }));
     reportStore.saveErSchedule(erDayScheduleList);
+    await reportStore.saveOutput();
   };
 
   return {

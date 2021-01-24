@@ -8,9 +8,15 @@ import { Day } from '../../domain/Day';
 import { ErRoom } from '../../domain/ErRoom';
 import ErRoomMock from '../../mocks/ErRoomMock';
 import { ErDaySchedule } from '../../domain/ErDaySchedule';
+import IExcel from '../excel/IExcel';
+import IInputProvider from '../inputProvider/IInputProvider';
 
 const reportStore = (): Module<IReportStore> => {
-  const start = async (excel: any): Promise<any> => {
+  const start = async (excel: IExcel, inputProvider: IInputProvider): Promise<IReportStore> => {
+    const tables = await excel.loadInput(inputProvider.inputFilePath);
+
+    const saveOutput = () => excel.saveOutput(inputProvider.outputFilePath);
+
     const getEmployeeERDays = (
       row: Row, numberDays: CellValue[], weekDays: CellValue[],
     ): EmployeeERDay[] => {
@@ -38,7 +44,7 @@ const reportStore = (): Module<IReportStore> => {
 
     const getEmployeeList = (): Employee[] => {
       const employeeList: Employee[] = [];
-      const ws = excel.tables.employeesVsErs;
+      const ws = tables.employeesVsErs;
       const numberDays = <CellValue[]>ws.getRow(1).values;
       const weekDays = <CellValue[]>ws.getRow(2).values;
       ws.eachRow((row: Row, index: number) => {
@@ -52,7 +58,7 @@ const reportStore = (): Module<IReportStore> => {
 
     const getDays = (): Day[] => {
       const dayList: Day[] = [];
-      const ws = excel.tables.employeesVsErs;
+      const ws = tables.employeesVsErs;
       const numberDays = <CellValue[]>ws.getRow(1).values;
       const weekDays = <CellValue[]>ws.getRow(2).values;
       numberDays.forEach((value, i) => dayList
@@ -75,7 +81,7 @@ const reportStore = (): Module<IReportStore> => {
     });
 
     const saveErSchedule = (erDayScheduleList :ErDaySchedule[]): void => {
-      const ws = excel.tables.daysVsEmployees;
+      const ws = tables.daysVsEmployees;
       const erRoomHeader = erDayScheduleList[0].roomSchedule
         .flatMap((roomSchedule) => Array(roomSchedule.room.size).fill(roomSchedule.room.name));
       ws.addRow(['', '', ...erRoomHeader]);
@@ -92,6 +98,7 @@ const reportStore = (): Module<IReportStore> => {
       getDays,
       getErRooms,
       saveErSchedule,
+      saveOutput,
     };
   };
 

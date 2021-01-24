@@ -7,7 +7,8 @@ interface IReportStore {
   getEmployeeList: () => Employee[],
   getDays: () => Day[],
   getErRooms: () => ErRoom[],
-  saveErSchedule: (erDayScheduleList :ErDaySchedule[]) => void
+  saveErSchedule: (erDayScheduleList :ErDaySchedule[]) => void,
+  saveOutput: () => Promise<void>
 }
 
 export default IReportStore;

@@ -1,8 +1,10 @@
-import { Workbook, Worksheet } from 'exceljs';
+import { Workbook } from 'exceljs';
+import ExcelTables from '../../domain/ExcelTables';
 
 interface IExcel {
     wb: Workbook,
-    tables: Worksheet[],
+    loadInput: (inputFilePath: string) => Promise<ExcelTables>,
+    saveOutput: (outputFilePath: string) => Promise<void>
 }
 
 export default IExcel;
