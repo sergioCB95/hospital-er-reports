@@ -5,7 +5,10 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "local": "ts-node src/index.ts"
+    "local": "ts-node ./src/index.ts",
+    "start": "node ./dist/index.ts",
+    "build": "tsc --build",
+    "build:clean": "tsc --build --clean"
   },
   "keywords": [],
   "author": "",
