@@ -1,4 +1,3 @@
-import { Day } from './Day';
 import { Employee } from './Employee';
 import { ErRoom } from './ErRoom';
 
@@ -8,6 +7,6 @@ export interface ErRoomSchedule {
 }
 
 export interface ErDaySchedule {
-    day: Day,
+    day: Date,
     roomSchedule: ErRoomSchedule[]
 }

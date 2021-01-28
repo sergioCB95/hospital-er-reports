@@ -11,7 +11,7 @@ const excel = (): Module<IExcel> => {
       await wb.xlsx.readFile(inputFilePath);
 
       return {
-        employeesVsErs: wb.getWorksheet('1. Guardias por personas'),
+        employeesVsErs: wb.getWorksheet('1. Guardias por personas') || wb.addWorksheet('1. Guardias por personas'),
         daysVsEmployees: wb.getWorksheet('3. Guardias por salas (URG)') || wb.addWorksheet('3. Guardias por salas (URG)'),
       } as const;
     };
