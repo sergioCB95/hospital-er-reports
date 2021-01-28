@@ -1,14 +1,14 @@
-import { Employee } from '../../domain/Employee';
-import { Day } from '../../domain/Day';
-import { ErRoom } from '../../domain/ErRoom';
-import { ErDaySchedule } from '../../domain/ErDaySchedule';
+import Survey from '../../domain/Survey';
 
 interface IReportStore {
+  /*
   getEmployeeList: () => Employee[],
   getDays: () => Day[],
   getErRooms: () => ErRoom[],
   saveErSchedule: (erDayScheduleList :ErDaySchedule[]) => void,
-  saveOutput: () => Promise<void>
+   */
+  saveOutput: () => Promise<void>,
+  getSurveyAnswers: () => Survey[]
 }
 
 export default IReportStore;

@@ -1,10 +1,12 @@
 import Module from '../Module';
 import ILogger from './logger/ILogger';
 import IReportStore from './reportStore/IReportStore';
-import { ErDaySchedule, ErRoomSchedule } from '../domain/ErDaySchedule';
+import IService from './service/IService';
 
 const controller = (): Module<any> => {
-  const start = async (logger: ILogger, reportStore: IReportStore): Promise<any> => {
+  const start = async (service: IService): Promise<any> => {
+    await service.calcER();
+    /*
     const days = reportStore.getDays();
     const erRooms = reportStore.getErRooms();
     const employees = reportStore.getEmployeeList();
@@ -18,6 +20,7 @@ const controller = (): Module<any> => {
     }));
     reportStore.saveErSchedule(erDayScheduleList);
     await reportStore.saveOutput();
+   */
   };
 
   return {

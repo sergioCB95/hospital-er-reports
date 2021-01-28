@@ -1,15 +1,9 @@
-import {
-  Cell, CellValue, Column, Row, Worksheet,
-} from 'exceljs';
+import { Row } from 'exceljs';
 import Module from '../../Module';
-import { Employee, EmployeeERDay } from '../../domain/Employee';
 import IReportStore from './IReportStore';
-import { Day } from '../../domain/Day';
-import { ErRoom } from '../../domain/ErRoom';
-import ErRoomMock from '../../mocks/ErRoomMock';
-import { ErDaySchedule } from '../../domain/ErDaySchedule';
 import IExcel from '../excel/IExcel';
 import IInputProvider from '../inputProvider/IInputProvider';
+import Survey from '../../domain/Survey';
 
 const reportStore = (): Module<IReportStore> => {
   const start = async (excel: IExcel, inputProvider: IInputProvider): Promise<IReportStore> => {
@@ -17,6 +11,7 @@ const reportStore = (): Module<IReportStore> => {
 
     const saveOutput = () => excel.saveOutput(inputProvider.outputFilePath);
 
+    /*
     const getEmployeeERDays = (
       row: Row, numberDays: CellValue[], weekDays: CellValue[],
     ): EmployeeERDay[] => {
@@ -36,7 +31,7 @@ const reportStore = (): Module<IReportStore> => {
     };
 
     const rowToEmployee = (row: Row, numberDays: CellValue[], weekDays: CellValue[]): Employee => {
-      const employee: Employee = { name: '', erDays: [] };
+      const employee: Employee = { name: '', email: '', erDays: [], erHours: 0, erWeekendHours: 0 };
       employee.name = <string>row.getCell(1).value;
       employee.erDays = getEmployeeERDays(row, numberDays, weekDays);
       return employee;
@@ -92,13 +87,52 @@ const reportStore = (): Module<IReportStore> => {
       });
       ws.columns = autosizeColumns(ws);
     };
+     */
+
+    const mapDayLists = (daysString: string): number[] => daysString
+      .split(',')
+      .map((a) => a.trim())
+      .filter((a) => a)
+      .map((a) => Number(a));
+
+    const mapWeekendDayLists = (daysString: string): number[][] => daysString
+      .split(',')
+      .map((a) => a.trim())
+      .filter((a) => a)
+      .map((a) => a.split('-').map((b) => Number(b)));
+
+    const rowToSurvey = (row: Row): Survey => ({
+      email: row.getCell(2).text,
+      name: row.getCell(3).text,
+      speciality: row.getCell(4).text,
+      blockedDays: mapDayLists(row.getCell(5).text),
+      blockedWeekendDays: mapWeekendDayLists(row.getCell(6).text),
+      specialityER: mapDayLists(row.getCell(7).text),
+      holidayLeave: mapDayLists(row.getCell(8).text),
+      comments: row.getCell(9).text,
+      timestamp: new Date(row.getCell(1).text),
+    });
+
+    const getSurveyAnswers = () => {
+      const surveyList: Survey[] = [];
+      const table = excel.wb.getWorksheet(1);
+      table.eachRow((row, index) => {
+        if (index > 1) {
+          surveyList.push(rowToSurvey(row));
+        }
+      });
+      return surveyList;
+    };
 
     return {
+      /*
       getEmployeeList,
       getDays,
       getErRooms,
       saveErSchedule,
+       */
       saveOutput,
+      getSurveyAnswers,
     };
   };
 
