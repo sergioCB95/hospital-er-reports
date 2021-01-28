@@ -6,6 +6,7 @@ import { Employee } from '../../domain/Employee';
 import { ErRoom } from '../../domain/ErRoom';
 import ErRoomMock from '../../mocks/ErRoomMock';
 import Survey from '../../domain/Survey';
+import { shuffleArray, sortChain } from '../../lib/arrayUtils';
 
 const service = (): Module<IService> => {
   const start = async (logger: ILogger, reportStore: IReportStore): Promise<IService> => {
@@ -37,41 +38,11 @@ const service = (): Module<IService> => {
       return weekHours + weekendHours;
     };
 
-    const shuffleArray = <T>(array: Array<T>): Array<T> => {
-      const arr = array;
-      for (let i = arr.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-      }
-      return arr;
-    };
-
     const addErDay = (employee: Employee, day: Date, room: ErRoom, isWeekend = false) => {
       const employeeCopy = employee;
       employeeCopy.erDays.push({ day, erRoom: room });
       if (isWeekend) employeeCopy.erWeekendHours += room.hours;
       employeeCopy.erHours += room.hours;
-    };
-
-    const extendedSort = (condition: number, tiebreak: number): number => {
-      let result;
-      if (condition > 0) {
-        result = 1;
-      } else if (condition < 0) {
-        result = -1;
-      } else {
-        result = tiebreak;
-      }
-      return result;
-    };
-
-    const sortChain = (...args: number[]): number => {
-      const first = args.shift();
-      return first
-        ? extendedSort(first, sortChain(...args))
-        : 0;
     };
 
     const weekendSort = (a: Employee, b: Employee) => sortChain(
@@ -89,15 +60,13 @@ const service = (): Module<IService> => {
       employees: Employee[], date: Date, num: number, isWeekend: boolean,
     ) => shuffleArray(employees)
       .sort(isWeekend ? weekendSort : notWeekendSort)
-      .filter((employee) => !employee.erDays
-        // They are already in ER
-        .some((erDay) => erDay.day === date
-              // They were the day before in ER (rest day)
-              || erDay.day.getDate() + 1 === date.getDate()))
+      .filter((employee) => !(employee.erDays
+        // They are already in ER or were the day before (rest day)
+        .some((erDay) => erDay.day === date || (erDay.day.getDate() + 1) === date.getDate())
         // They blocked that day
-        // || employee.survey?.blockedDays.some((day) => day === date.getDate())
+        || employee.survey.blockedDays.some((day) => day === date.getDate())
         // They blocked that (weekend) day
-        // || employee.survey?.blockedWeekendDays.flat().some((day) => day === date.getDate()))
+        || employee.survey.blockedWeekendDays.flat().some((day) => day === date.getDate())))
       .slice(0, num);
 
     const scheduleDays = (
@@ -120,7 +89,7 @@ const service = (): Module<IService> => {
       erWeekendHours: 0,
     });
 
-    const calcER = async () => {
+    const calcER = async (): Promise<Employee[]> => {
       const surveys = reportStore.getSurveyAnswers();
       const month = getMonth();
       const erRooms = getErRooms();
@@ -141,11 +110,12 @@ const service = (): Module<IService> => {
         erRooms.filter((room) => !room.onlyWeekends),
         false,
       );
-
-      employees.forEach((employee) => console.log(`${employee.erHours} : ${employee.erWeekendHours}`));
+      return employees;
     };
 
     return {
+      getErRooms,
+      getMonth,
       calcER,
     };
   };

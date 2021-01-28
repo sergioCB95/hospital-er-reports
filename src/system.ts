@@ -11,9 +11,9 @@ const system = () => {
       const logger = await initLogger().start();
       const inputProvider = await initInputProvider().start();
       const excel = await initExcel().start();
-      const reportReader = await initReportStore().start(excel, inputProvider);
-      const service = await initService().start(logger, reportReader);
-      await initController().start(service);
+      const reportStore = await initReportStore().start(excel, inputProvider);
+      const service = await initService().start(logger, reportStore);
+      await initController().start(service, reportStore);
     } catch (err) {
       console.log(err);
     }
