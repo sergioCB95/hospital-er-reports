@@ -1,11 +1,11 @@
 import { Row, Worksheet, Column } from 'exceljs';
-import Module from '../../Module';
+import Module from '../../../Module';
 import IReportStore from './IReportStore';
-import IExcel from '../excel/IExcel';
-import IInputProvider from '../inputProvider/IInputProvider';
-import Survey from '../../domain/Survey';
-import { ErDaySchedule } from '../../domain/ErDaySchedule';
-import { Employee } from '../../domain/Employee';
+import IExcel from '../../excel/IExcel';
+import IInputProvider from '../../inputProvider/IInputProvider';
+import Survey from '../../../domain/Survey';
+import { ErDaySchedule } from '../../../domain/ErDaySchedule';
+import { Employee } from '../../../domain/Employee';
 
 const reportStore = (): Module<IReportStore> => {
   const start = async (excel: IExcel, inputProvider: IInputProvider): Promise<IReportStore> => {
@@ -43,7 +43,7 @@ const reportStore = (): Module<IReportStore> => {
         specialityEmployees.forEach((employee) => ws
           .addRow([
             employee.name,
-            employee.survey.timestamp,
+            '',
             ...days.map((day) => {
               let value = '';
               const foundEr = employee.erDays
@@ -117,11 +117,6 @@ const reportStore = (): Module<IReportStore> => {
     };
 
     return {
-      /*
-      getEmployeeList,
-      getDays,
-      getErRooms,
-       */
       saveEmployeesSchedule,
       saveErSchedule,
       saveOutput,

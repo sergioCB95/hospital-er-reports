@@ -1,13 +1,17 @@
 import Module from '../Module';
 import IService from './service/IService';
 import { ErDaySchedule, ErRoomSchedule } from '../domain/ErDaySchedule';
-import IReportStore from './reportStore/IReportStore';
+import IReportStore from './stores/reportStore/IReportStore';
+import IDateStore from './stores/dateStore/IDateStore';
+import IRoomStore from './stores/roomStore/IRoomStore';
 
-const controller = (): Module<any> => {
-  const start = async (service: IService, reportStore: IReportStore): Promise<any> => {
-    const employees = await service.calcER();
-    const month = service.getMonth();
-    const erRooms = service.getErRooms();
+const controller = (): Module<void> => {
+  const start = async (
+    service: IService, reportStore: IReportStore, dateStore: IDateStore, roomStore: IRoomStore
+  ): Promise<void> => {
+    const month = dateStore.getMonth();
+    const erRooms = roomStore.getErRooms();
+    const employees = await service.calcER(month, erRooms);
     const erDayScheduleList = month.map((day): ErDaySchedule => ({
       day,
       roomSchedule: erRooms.map((room): ErRoomSchedule => ({
