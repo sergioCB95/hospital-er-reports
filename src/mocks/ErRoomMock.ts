@@ -25,10 +25,23 @@ const ErRoomMock = (): ErRoom[] => ([
     id: 'UPA',
     name: 'UPA',
     size: 1,
-  },{
+  },
+  {
     id: 'UPAm',
     name: 'UPAm',
     size: 1,
+  },
+  {
+    id: 'GA',
+    name: 'GA',
+    size: 1,
+    composedBy: ['AM', 'AT'],
+  },
+  {
+    id: 'GB',
+    name: 'GB',
+    size: 1,
+    composedBy: ['BM', 'BT'],
   },
 ]);
 
