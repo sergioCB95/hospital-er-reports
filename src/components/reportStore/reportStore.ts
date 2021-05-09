@@ -86,8 +86,14 @@ const reportStore = (): Module<IReportStore> => {
         .flatMap((roomSchedule) => Array(roomSchedule.room.size).fill(roomSchedule.room.name));
       ws.addRow(['', '', ...erRoomHeader]);
       erDayScheduleList.forEach(({ day, roomSchedule }) => {
-        const employeesPerErRoom = roomSchedule.flatMap((erRoomSchedule) => erRoomSchedule
-          .employees.map((employee) => employee.name));
+        const employeesPerErRoom = roomSchedule.flatMap((erRoomSchedule) => {
+          const result = erRoomSchedule.employees.map((employee) => employee.name);
+          const left = erRoomSchedule.room.size - result.length;
+          for (let i = 0; i < left; i += 1) {
+            result.push('');
+          }
+          return result;
+        });
         ws.addRow([day.numberDay, day.weekDay, ...employeesPerErRoom]);
       });
       ws.columns = autosizeColumns(ws);
