@@ -21,6 +21,15 @@ const ErRoomMock = (): ErRoom[] => ([
     name: 'SALA B MAÑANA',
     size: 3,
   },
+  {
+    id: 'UPA',
+    name: 'UPA',
+    size: 1,
+  },{
+    id: 'UPAm',
+    name: 'UPAm',
+    size: 1,
+  },
 ]);
 
 export default ErRoomMock;
